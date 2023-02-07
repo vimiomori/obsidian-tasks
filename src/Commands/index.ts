@@ -1,5 +1,6 @@
 import type { App, Editor, Plugin, View } from 'obsidian';
 import { createOrEdit } from './CreateOrEdit';
+import { createAtIndex } from './CreateOrEditAtIndex';
 
 import { toggleDone } from './ToggleDone';
 
@@ -12,6 +13,13 @@ export class Commands {
 
     constructor({ plugin }: { plugin: Plugin }) {
         this.plugin = plugin;
+
+        plugin.addCommand({
+            id: 'edit-task-at-index',
+            name: 'Create or edit task at index',
+            icon: 'pencil',
+            callback: () => createAtIndex(this.app),
+        });
 
         plugin.addCommand({
             id: 'edit-task',

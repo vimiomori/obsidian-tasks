@@ -20,7 +20,7 @@ export default class TasksPlugin extends Plugin {
     public queryRenderer: QueryRenderer | undefined;
 
     async onload() {
-        console.log('loading plugin "tasks"');
+        console.log('loading plugin "tasks vi"');
 
         await this.loadSettings();
         this.addSettingTab(new SettingsTab({ plugin: this }));
@@ -53,7 +53,7 @@ export default class TasksPlugin extends Plugin {
     }
 
     onunload() {
-        console.log('unloading plugin "tasks"');
+        console.log('unloading plugin "tasks vi"');
         this.cache?.unload();
     }
 
