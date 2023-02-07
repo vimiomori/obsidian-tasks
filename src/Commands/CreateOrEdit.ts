@@ -4,6 +4,7 @@ import type { Task } from '../Task';
 import { DateFallback } from '../DateFallback';
 import { taskFromLine } from './CreateOrEditTaskParser';
 
+// TEST COMMENT
 export const createOrEdit = (checking: boolean, editor: Editor, view: View, app: App) => {
     if (checking) {
         return view instanceof MarkdownView;
