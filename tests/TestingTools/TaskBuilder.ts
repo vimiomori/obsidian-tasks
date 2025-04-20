@@ -56,6 +56,7 @@ export class TaskBuilder {
 
     private _scheduledDateIsInferred: boolean = false;
     private _id: string = '';
+    private _tickTickId: string = '';
     private _dependsOn: string[] = [];
     private _mockData: any = undefined;
 
@@ -105,6 +106,7 @@ export class TaskBuilder {
             onCompletion: this._onCompletion,
             dependsOn: this._dependsOn,
             id: this._id,
+            tickTickId: this._tickTickId,
             blockLink: this._blockLink,
             tags: this._tags,
             originalMarkdown: '',
@@ -136,6 +138,7 @@ export class TaskBuilder {
             .onCompletion(OnCompletion.Delete)
             .dependsOn(['123456', 'abc123'])
             .id('abcdef')
+            .tickTickId('abcdef')
             .blockLink(' ^dcf64c')
             // Values in TaskLocation:
             .path('some/folder/fileName.md')
@@ -318,6 +321,11 @@ export class TaskBuilder {
 
     public id(id: string) {
         this._id = id;
+        return this;
+    }
+
+    public tickTickId(tickTickId: string) {
+        this._tickTickId = tickTickId;
         return this;
     }
 

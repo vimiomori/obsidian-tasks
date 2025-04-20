@@ -64,6 +64,9 @@ export interface Settings {
     includes: Record<string, string>;
     globalQuery: string;
     globalFilter: string;
+    viSettings: boolean;
+    username: string;
+    password: string;
     removeGlobalFilter: boolean;
     taskFormat: keyof TASK_FORMATS;
     setCreatedDate: boolean;
@@ -100,6 +103,9 @@ const defaultSettings: Settings = {
     includes: {},
     globalQuery: '',
     globalFilter: '',
+    viSettings: true,
+    username: '',
+    password: '',
     removeGlobalFilter: false,
     taskFormat: 'tasksPluginEmoji',
     setCreatedDate: false,
