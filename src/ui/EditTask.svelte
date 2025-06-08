@@ -119,7 +119,9 @@
         const { provideAccessKeys, ticktickprojects } = getSettings();
         withAccessKeys = provideAccessKeys;
         projects = ticktickprojects;
+        console.log('edit tasks on mount projects', projects);
         if (editableTask.tickTickProjectid !== '') {
+            console.log('editable task project id', editableTask.tickTickProjectid);
             const hit = projects.filter((f) => {
                 return f.id === editableTask.tickTickProjectid;
             });
@@ -203,8 +205,12 @@
             forwardOnly={editableTask.forwardOnly}
             accesskey={accesskey('d')}
         />
+
+        <!-- --------------------------------------------------------------------------- -->
+        <!--  Project Picker  -->
+        <!-- --------------------------------------------------------------------------- -->
         <ProjectPicker
-            bind:search={selectedProject.name}
+            search={selectedProject.name}
             {editableTask}
             {projects}
             {_onDescriptionKeyDown}
@@ -249,23 +255,6 @@
         <!--     /> -->
         <!-- </div> -->
     </section>
-
-    <!-- --------------------------------------------------------------------------- -->
-    <!--  Project Picker  -->
-    <!-- --------------------------------------------------------------------------- -->
-    <!-- <hr /> -->
-    <!-- <section class="tasks-modal-dependencies-section"> -->
-    <!-- --------------------------------------------------------------------------- -->
-    <!--  Blocked By Tasks  -->
-    <!-- --------------------------------------------------------------------------- -->
-    <!-- <ProjectPicker -->
-    <!-- bind:search={selectedProject.name} -->
-    <!-- {editableTask} -->
-    <!-- {projects} -->
-    <!-- {_onDescriptionKeyDown} -->
-    <!-- placeholder="Project ?" -->
-    <!-- /> -->
-    <!-- </section> -->
 
     <!-- --------------------------------------------------------------------------- -->
     <!--  Priority  -->

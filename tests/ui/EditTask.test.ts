@@ -7,7 +7,6 @@ import { taskFromLine } from '../../src/Commands/CreateOrEditTaskParser';
 import { GlobalFilter } from '../../src/Config/GlobalFilter';
 import { resetSettings, updateSettings } from '../../src/Config/Settings';
 import { DateFallback } from '../../src/DateTime/DateFallback';
-import { StatusRegistry } from '../../src/Statuses/StatusRegistry';
 import type { Task } from '../../src/Task/Task';
 import EditTask from '../../src/ui/EditTask.svelte';
 // import { verifyWithFileExtension } from '../TestingTools/ApprovalTestHelpers';
@@ -46,7 +45,7 @@ function renderAndCheckModal(task: Task, onSubmit: (updatedTasks: Task[]) => voi
     const result: RenderResult<EditTask> = render(EditTask, {
         task,
         //@ts-ignore
-        statusOptions: StatusRegistry.getInstance().registeredStatuses,
+        // statusOptions: StatusRegistry.getInstance().registeredStatuses,
         onSubmit,
         allTasks,
     });

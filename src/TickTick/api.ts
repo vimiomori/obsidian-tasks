@@ -92,19 +92,8 @@ export class TickTickApi {
             ret.taskSync.delete.push(taskFromTickTickTask(del));
         }
 
-        const inbox = { id: response.inboxId, name: 'Inbox' };
-        if (response.projectProfiles) {
-            ret.projects = [
-                inbox,
-                ...response.projectProfiles.map((profile: any) => {
-                    return {
-                        id: profile.id,
-                        name: profile.name,
-                    };
-                }),
-            ];
-        }
-
+        const projects = await this.listProjects();
+        ret.projects = projects;
         return ret;
     }
 

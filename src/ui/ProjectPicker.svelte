@@ -21,9 +21,9 @@
     const workProject = { id: '67f9c5dd8f08d8402fd1b88f', name: '💼Work' };
 
     function selectProject(project: TickTickProject) {
-        editableTask['tickTickProjectid'] = project.id;
-        search = project.name;
-        inputFocused = false;
+        const { name, id } = project;
+        editableTask['tickTickProjectid'] = id;
+        search = name;
     }
 
     if (search === '') {
@@ -31,7 +31,11 @@
     }
 
     function taskKeydown(e: KeyboardEvent) {
-        if (searchResults === null) return;
+        if (searchResults === null) {
+            inputFocused = true;
+            showDropdown = true;
+            return;
+        }
 
         switch (e.key) {
             case 'ArrowUp':
@@ -58,12 +62,15 @@
                     selectProject(searchResults[searchIndex]);
                     searchIndex = null;
                     inputFocused = false;
+                    showDropdown = false;
                 } else {
                     _onDescriptionKeyDown(e);
                 }
                 break;
             default:
                 searchIndex = 0;
+                inputFocused = true;
+                showDropdown = true;
                 break;
         }
         searchIndex && dropdown?.getElementsByTagName('li')[searchIndex]?.scrollIntoView({ block: 'nearest' });
@@ -72,7 +79,6 @@
     function generateSearchResults(search: string) {
         if (!search && !showDropdown) return [];
 
-        showDropdown = false;
         return searchProject(search, projects);
     }
 
