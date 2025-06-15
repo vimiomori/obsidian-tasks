@@ -116,9 +116,9 @@
     }
 </script>
 
-<label for={'project'} />
 <!-- svelte-ignore a11y-accesskey -->
 <span bind:clientWidth={inputWidth}>
+    <label for={'project'} />
     <input
         bind:this={input}
         bind:value={search}
@@ -131,6 +131,7 @@
         {placeholder}
     />
 </span>
+
 {#if searchResults && searchResults.length !== 0}
     <ul class="task-dependency-dropdown" bind:this={dropdown} on:mouseleave={() => (searchIndex = null)}>
         {#each searchResults as foundProject, index}

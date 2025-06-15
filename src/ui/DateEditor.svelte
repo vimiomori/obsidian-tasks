@@ -52,18 +52,19 @@
 {:else}
     <code class="tasks-modal-parsed-date">{@html parsedDate}</code>
 {/if}
-
-<label for={id} />
-<!-- svelte-ignore a11y-accesskey -->
-<input
-    bind:value={date}
-    {id}
-    type="text"
-    class:tasks-modal-error={!isDateValid}
-    class="tasks-modal-date-input"
-    placeholder={datePlaceholder}
-    {accesskey}
-/>
+<div class="tasks-modal-date-input-container">
+    <label for={id} />
+    <!-- svelte-ignore a11y-accesskey -->
+    <input
+        bind:value={date}
+        {id}
+        type="text"
+        class:tasks-modal-error={!isDateValid}
+        class="tasks-modal-date-input"
+        placeholder={datePlaceholder}
+        {accesskey}
+    />
+</div>
 
 <style>
 </style>
