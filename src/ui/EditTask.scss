@@ -66,20 +66,23 @@
 }
 
 .tasks-modal-dates-section {
-    // display: grid;
-    // grid-template-columns: 6.0em 13em auto;
-    // column-gap: .5em;
-    // row-gap: 5px;
-    // align-items: center;
-
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
     align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    margin-top: 1rem;
+    margin-block-start: 1rem;
+    margin-block-end: 1rem;
 
     label {
         grid-column: 1;
+    }
+
+    input {
+        width: 100%;
+    }
+
+    code.tasks-modal-parsed-date {
+        margin-inline-start: 1rem;
     }
 
     .tasks-modal-date-input {
@@ -132,7 +135,7 @@
     bottom: 0;
     background-color: var(--modal-background);
     padding-bottom: 1rem;
-    padding-top: 2rem;
+    padding-top: 1rem;
     display: grid;
     grid-template-columns: 3fr 1fr;
     column-gap: 0.5em;
