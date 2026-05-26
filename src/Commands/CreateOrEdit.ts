@@ -46,7 +46,6 @@ export const createOrEdit = (
     const taskModal = new TaskModal({
         app,
         task,
-        onSaveSettings,
         onSubmit,
         allTasks,
     });

@@ -1,3 +1,6 @@
+# lefthook local overrides
+lefthook.local.yml
+
 # Intellij
 *.iml
 .idea

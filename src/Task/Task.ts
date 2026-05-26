@@ -1,3 +1,4 @@
+import { TickTickApi } from '../TickTick/api';
 import { getSettings, getUserSelectedTaskFormat } from '../Config/Settings';
 import { GlobalFilter } from '../Config/GlobalFilter';
 import { StatusRegistry } from '../Statuses/StatusRegistry';
@@ -423,8 +424,7 @@ export class Task extends ListItem {
             return [toggledTask];
         }
 
-        const { removeScheduledDateOnRecurrence } = getSettings();
-        const nextOccurrence = this.recurrence?.next(today, removeScheduledDateOnRecurrence);
+        const nextOccurrence = this.recurrence.next(today);
         if (nextOccurrence === null) {
             return [toggledTask];
         }

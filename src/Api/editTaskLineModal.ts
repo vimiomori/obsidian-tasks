@@ -20,7 +20,6 @@ export function editTaskLineModal(
     app: App,
     taskLine: string,
     allTasks: Task[],
-    onSaveSettings: () => Promise<void>,
 ): Promise<string> {
     let resolvePromise: (input: string) => void;
     const waitForClose = new Promise<string>((resolve, _) => {
@@ -40,7 +39,6 @@ export function editTaskLineModal(
     const taskModal = new TaskModal({
         app,
         task,
-        onSaveSettings,
         onSubmit,
         onCancel,
         allTasks,

@@ -15,7 +15,6 @@ import { TaskModal } from '../Obsidian/TaskModal';
 export const createTaskLineModal = (
     app: App,
     allTasks: Task[],
-    onSaveSettings: () => Promise<void>,
 ): Promise<string> => {
     let resolvePromise: (input: string) => void;
     const waitForClose = new Promise<string>((resolve, _) => {
@@ -35,7 +34,6 @@ export const createTaskLineModal = (
     const taskModal = new TaskModal({
         app,
         task,
-        onSaveSettings,
         onSubmit,
         onCancel,
         allTasks,

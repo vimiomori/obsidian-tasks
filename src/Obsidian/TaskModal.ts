@@ -1,4 +1,4 @@
-import { type App, setIcon } from 'obsidian';
+import type { App } from 'obsidian';
 import { Modal } from 'obsidian';
 
 import EditTask from '../ui/EditTask.svelte';
@@ -12,11 +12,13 @@ export class TaskModal extends Modal {
         app,
         task,
         onSubmit,
+        onCancel,
         allTasks,
     }: {
         app: App;
         task: Task;
         onSubmit: (updatedTasks: Task[], updatedTask?: Task) => void | Promise<void>;
+        onCancel?: () => void;
         allTasks: Task[];
     }) {
         super(app);
@@ -24,7 +26,11 @@ export class TaskModal extends Modal {
         this.task = task;
         this.allTasks = allTasks;
         this.onSubmit = (updatedTasks: Task[], updatedTask?: Task) => {
-            updatedTasks.length && onSubmit(updatedTasks, updatedTask);
+            if (updatedTasks.length) {
+                onSubmit(updatedTasks, updatedTask);
+            } else {
+                onCancel?.();
+            }
             this.close();
         };
     }
@@ -32,23 +38,6 @@ export class TaskModal extends Modal {
     public onOpen(): void {
         this.titleEl.setText('Create or edit Task');
         this.modalEl.style.paddingBottom = '0';
-
-        const optionsButton = document.createElement('button');
-        // Add same classes as the default Obsidian modal close button.
-        optionsButton.addClasses(['modal-close-button', 'mod-raised', 'clickable-icon']);
-        // But overload the 'inset-inline-end' property for a correct position.
-        optionsButton.addClass('modal-option-button');
-        setIcon(optionsButton, 'settings');
-        optionsButton.onclick = () => {
-            const optionsModal = new OptionsModal({
-                app: this.app,
-                onSave: () => {
-                    this.onSaveSettings();
-                },
-            });
-            optionsModal.open();
-        };
-        this.modalEl.appendChild(optionsButton);
 
         const { contentEl } = this;
         this.contentEl.style.paddingBottom = '0';

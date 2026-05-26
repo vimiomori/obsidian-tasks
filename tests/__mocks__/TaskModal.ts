@@ -8,7 +8,7 @@ export class TaskModal {
     public static instance: TaskModal;
     public readonly app: App;
     public readonly task: Task;
-    public readonly onSubmit: (updateTasks: Task[]) => void;
+    public readonly onSubmit: (updatedTasks: Task[], updatedTask?: Task) => void;
     public readonly allTasks: Task[];
 
     public readonly open: () => void;
@@ -22,17 +22,17 @@ export class TaskModal {
     }: {
         app: App;
         task: Task;
-        onSubmit: (updatedTasks: Task[]) => void;
+        onSubmit: (updatedTasks: Task[], updatedTask?: Task) => void;
         onCancel?: () => void;
         allTasks?: Task[];
     }) {
         this.app = app;
         this.task = task;
-        this.onSubmit = (updatedTasks: Task[]) => {
+        this.onSubmit = (updatedTasks: Task[], updatedTask?: Task) => {
             if (updatedTasks.length > 0) {
-                onSubmit(updatedTasks);
-            } else if (onCancel) {
-                onCancel();
+                onSubmit(updatedTasks, updatedTask);
+            } else {
+                onCancel?.();
             }
         };
         this.open = jest.fn();

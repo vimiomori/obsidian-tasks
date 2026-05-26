@@ -3,10 +3,8 @@ import type { Task } from '../../src/Task/Task';
 import { editTaskLineModal } from '../../src/Api/editTaskLineModal';
 import { taskFromLine } from '../../src/Commands/CreateOrEditTaskParser';
 import { TaskModal } from '../__mocks__/TaskModal';
-import type { TaskModalParams } from '../../src/Obsidian/TaskModal';
 
 const app = {} as App;
-const noOpOnSaveSettings = async () => {};
 
 const createNewTask = (line = ''): Task => {
     return taskFromLine({ line, path: '' });
@@ -14,7 +12,7 @@ const createNewTask = (line = ''): Task => {
 
 jest.mock('../../src/Obsidian/TaskModal', () => {
     return {
-        TaskModal: jest.fn(({ app, task, onSubmit, onCancel, allTasks }: TaskModalParams) => {
+        TaskModal: jest.fn(({ app, task, onSubmit, onCancel, allTasks }) => {
             return new TaskModal({ app, task, onSubmit, onCancel, allTasks });
         }),
     };
@@ -27,14 +25,14 @@ describe('APIv1 - editTaskLineModal', () => {
 
     it('TaskModal.open() should be called', () => {
         const taskLine = '- [ ] ';
-        editTaskLineModal(app, taskLine, [], noOpOnSaveSettings);
+        editTaskLineModal(app, taskLine, []);
 
         expect(TaskModal.instance.open).toHaveBeenCalled();
     });
 
     it('should return the edited Markdown', async () => {
         const taskLine = '- [ ] Updated Task';
-        const taskLinePromise = editTaskLineModal(app, '- [ ] Task Name', [], noOpOnSaveSettings);
+        const taskLinePromise = editTaskLineModal(app, '- [ ] Task Name', []);
 
         TaskModal.instance.onSubmit([createNewTask(taskLine)]);
 
@@ -44,7 +42,7 @@ describe('APIv1 - editTaskLineModal', () => {
 
     it('should return empty string on cancel', async () => {
         const taskLine = '- [ ] ';
-        const taskLinePromise = editTaskLineModal(app, taskLine, [], noOpOnSaveSettings);
+        const taskLinePromise = editTaskLineModal(app, taskLine, []);
 
         TaskModal.instance.cancel();
 
@@ -56,7 +54,7 @@ describe('APIv1 - editTaskLineModal', () => {
         const taskLine = '- [ ] Task Name';
         const allTasks = [createNewTask('- [ ] Task 1')];
 
-        editTaskLineModal(app, taskLine, allTasks, noOpOnSaveSettings);
+        editTaskLineModal(app, taskLine, allTasks);
 
         expect(TaskModal.instance.allTasks).toEqual(allTasks);
     });
