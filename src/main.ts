@@ -147,7 +147,7 @@ export default class TasksPlugin extends Plugin {
         }
     }
 
-    private setTasks(tasks: Task[]) {
+    public setTasks(tasks: Task[]) {
         if (this.cache === undefined) {
             return;
         } else {

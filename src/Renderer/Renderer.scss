@@ -79,7 +79,7 @@
 }
 
 /* Edit and postpone */
-.tasks-edit, .tasks-postpone {
+.tasks-edit, .tasks-postpone, .tasks-priority {
     width: 1em;
     height: 1em;
     vertical-align: middle;
@@ -92,7 +92,7 @@
     -webkit-touch-callout: none;
 }
 
-a.tasks-edit, a.tasks-postpone {
+a.tasks-edit, a.tasks-postpone, a.tasks-priority {
     text-decoration: none;
 }
 
@@ -102,6 +102,10 @@ a.tasks-edit, a.tasks-postpone {
 
 .tasks-postpone::after {
     content: '⏩';
+}
+
+.tasks-priority::after {
+    content: '🔹';
 }
 
 /* Urgency score */

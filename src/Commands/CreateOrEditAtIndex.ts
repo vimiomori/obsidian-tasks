@@ -32,12 +32,12 @@ export const createAtIndex = async (app: App, plugin: TasksPlugin) => {
                 if (task.descriptionWithoutTags === updatedTask?.descriptionWithoutTags) {
                     task.tickTickId = ticktickId;
                     task.tickTickProjectId = ticktickProjectId;
+                    plugin.setTasks([...allTasks, task]);
                 }
                 return task.toFileLineString();
             })
             .join('\n');
         await app.vault.append(file, serialized + '\n');
-        await plugin.ticktickSync(updatedTask);
     };
 
     const taskModal = new TaskModal({

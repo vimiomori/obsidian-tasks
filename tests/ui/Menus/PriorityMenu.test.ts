@@ -15,12 +15,16 @@ describe('PriorityMenu', () => {
         const task = new TaskBuilder().build();
 
         // Act
-        const menu = new PriorityMenu(task);
+        const button = document.createElement('a');
+        const menu = new PriorityMenu(button, task);
 
         // Assert
         const itemsAsText = menuToString(menu);
         expect(itemsAsText).toMatchInlineSnapshot(`
             "
+              Increase priority
+              Decrease priority
+              ---
               Priority: Highest
               Priority: High
               Priority: Medium
@@ -33,11 +37,12 @@ describe('PriorityMenu', () => {
     it('should modify task, if different priority selected', () => {
         // Arrange
         const task = new TaskBuilder().build();
-        const menu = new PriorityMenu(task, TestableTaskSaver.testableTaskSaver);
+        const button = document.createElement('a');
+        const menu = new PriorityMenu(button, task, TestableTaskSaver.testableTaskSaver);
 
         // Act
         // @ts-expect-error TS2339: Property 'items' does not exist on type 'PriorityMenu'.
-        const todoItem = menu.items[0];
+        const todoItem = menu.items[3];
         expect(todoItem.title).toEqual('Priority: Highest');
         todoItem.callback();
 
@@ -46,7 +51,7 @@ describe('PriorityMenu', () => {
         expect(TestableTaskSaver.taskBeingOverwritten!.priority).toEqual(Priority.None);
 
         expect(TestableTaskSaver.tasksBeingSaved!.length).toEqual(1);
-        expect(TestableTaskSaver.tasksBeingSaved![0].priority).toEqual(Priority.Highest);
+        expect(TestableTaskSaver.tasksBeingSaved![3].priority).toEqual(Priority.Highest);
     });
 
     it('should not modify task, if current priority selected', () => {
@@ -54,11 +59,12 @@ describe('PriorityMenu', () => {
         const task = new TaskBuilder().priority(Priority.Highest).build();
 
         // Act
-        const menu = new PriorityMenu(task, TestableTaskSaver.testableTaskSaver);
+        const button = document.createElement('a');
+        const menu = new PriorityMenu(button, task, TestableTaskSaver.testableTaskSaver);
 
         // Act
         // @ts-expect-error TS2339: Property 'items' does not exist on type 'PriorityMenu'.
-        const todoItem = menu.items[0];
+        const todoItem = menu.items[3];
         expect(todoItem.title).toEqual('Priority: Highest');
         todoItem.callback();
 
