@@ -76,6 +76,8 @@ describe('validate emoji regular expressions', () => {
             onCompletionRegex: /🏁\\ufe0f? *([a-zA-Z]+)$/
             dependsOnRegex: /⛔\\ufe0f? *([a-zA-Z0-9-_]+( *, *[a-zA-Z0-9-_]+ *)*)$/
             idRegex: /🆔\\ufe0f? *([a-zA-Z0-9-_]+)$/
+            tickTickIdRegex: /🐬\\ufe0f? *([a-zA-Z0-9-_]+)$/
+            tickTickProjectIdRegex: /🐳\\ufe0f? *([a-zA-Z0-9-_]+)$/
             "
         `);
     });
