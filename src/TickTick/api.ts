@@ -1,4 +1,3 @@
-import moment from 'moment';
 import type { TickTickProject } from 'Config/Settings';
 import { Task } from '../Task/Task';
 import { TasksFile } from '../Scripting/TasksFile';
@@ -309,13 +308,13 @@ export const taskFromTickTickTask = (task: TickTickTask): Task => {
     let tags: string[] = [];
 
     if (task.dueDate) {
-        duedate = moment(task.dueDate);
+        duedate = window.moment(task.dueDate);
     }
     if (task.completedTime) {
-        doneDate = moment(task.completedTime);
+        doneDate = window.moment(task.completedTime);
     }
     if (task.createdDate) {
-        createdDate = moment(task.createdDate);
+        createdDate = window.moment(task.createdDate);
     }
     if (task.tags) {
         tags = task.tags.map((tag) => tag.rawName);

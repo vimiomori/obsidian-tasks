@@ -44,6 +44,7 @@ export class Client {
 
     get userAgent() {
         if (!this._userAgent) {
+            // eslint-disable-next-line obsidianmd/platform
             this._userAgent = navigator.userAgent;
         }
         return this._userAgent;

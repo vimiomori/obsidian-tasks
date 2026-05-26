@@ -8,7 +8,6 @@ import type { EditModalShowSettings } from '../../src/Config/EditModalShowSettin
 import { GlobalFilter } from '../../src/Config/GlobalFilter';
 import { getSettings, resetSettings, updateSettings } from '../../src/Config/Settings';
 import { DateFallback } from '../../src/DateTime/DateFallback';
-import { StatusRegistry } from '../../src/Statuses/StatusRegistry';
 import type { Task } from '../../src/Task/Task';
 import EditTask from '../../src/ui/EditTask.svelte';
 import { verifyWithFileExtension } from '../TestingTools/ApprovalTestHelpers';
@@ -48,7 +47,6 @@ function constructSerialisingOnSubmit(task: Task) {
 function renderAndCheckModal(task: Task, onSubmit: (updatedTasks: Task[]) => void, allTasks = [task]) {
     const result: RenderResult<EditTask> = render(EditTask, {
         task,
-        statusOptions: StatusRegistry.getInstance().registeredStatuses,
         onSubmit,
         allTasks,
     });
