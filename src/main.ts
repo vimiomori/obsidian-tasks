@@ -1,12 +1,15 @@
 import { Plugin, type Reference, getLinkpath } from 'obsidian';
 
 import type { Task } from 'Task/Task';
+import { TickTickApi } from 'TickTick/api';
+import { TaskLocation } from 'Task/TaskLocation';
+import { TasksFile } from './Scripting/TasksFile';
 import { i18n, initializeI18n } from './i18n/i18n';
-import { Cache, State } from './Obsidian/Cache';
+import { Cache, State, type TasksMap } from './Obsidian/Cache';
 import { Commands } from './Commands';
 import { GlobalQuery } from './Config/GlobalQuery';
 import { TasksEvents } from './Obsidian/TasksEvents';
-import { initializeFile } from './Obsidian/File';
+import { initializeFile, replaceTaskWithTasks } from './Obsidian/File';
 import { InlineRenderer } from './Obsidian/InlineRenderer';
 import { newLivePreviewExtension } from './Obsidian/LivePreviewExtension';
 import { QueryRenderer } from './Renderer/QueryRenderer';
@@ -27,9 +30,17 @@ export default class TasksPlugin extends Plugin {
     private cache: Cache | undefined;
     public inlineRenderer: InlineRenderer | undefined;
     public queryRenderer: QueryRenderer | undefined;
+    private _ticktickapi: TickTickApi | undefined;
 
     get apiV1() {
         return tasksApiV1(this);
+    }
+
+    get ticktickapi() {
+        if (!this._ticktickapi) {
+            this._ticktickapi = TickTickApi.getInstance();
+        }
+        return this._ticktickapi;
     }
 
     async onload() {
@@ -41,6 +52,13 @@ export default class TasksPlugin extends Plugin {
         await this.loadSettings();
 
         EnableJsInTasksQueries.initialise(new ObsidianLocalStorageProvider(this.app));
+
+        const { username, password } = getSettings();
+        if (username && password) {
+            this.ticktickapi.setUsername(username);
+            this.ticktickapi.setPassword(password);
+            this.ticktickapi.login();
+        }
 
         // Configure logging.
         const { loggingOptions } = getSettings();
@@ -81,6 +99,15 @@ export default class TasksPlugin extends Plugin {
 
         this.registerEditorExtension(newLivePreviewExtension());
         this.registerEditorSuggest(new EditorSuggestor(this.app, getSettings(), this));
+        this.registerInterval(window.setInterval(() => this.ticktickapi.login(), 1000 * 60 * 60 * 12)); // 12 hours
+        const item = this.addStatusBarItem();
+        const button = item.createEl('a', { text: 'Sync' });
+        button.title = 'Sync';
+        button.addEventListener('click', (ev: MouseEvent) => {
+            ev.preventDefault(); // suppress the default click behavior
+            ev.stopPropagation(); // suppress further event propagation
+            this.ticktickSync();
+        });
         new Commands({ plugin: this });
     }
 
@@ -120,11 +147,72 @@ export default class TasksPlugin extends Plugin {
         }
     }
 
+    private setTasks(tasks: Task[]) {
+        if (this.cache === undefined) {
+            return;
+        } else {
+            this.cache.tasks = tasks;
+            return;
+        }
+    }
+
     public getState(): State {
         if (this.cache === undefined) {
             return State.Cold;
         }
         return this.cache.getState();
+    }
+
+    public getTasksMap(): TasksMap {
+        if (this.cache === undefined) {
+            return {} as TasksMap;
+        } else {
+            return this.cache.getTasksMap();
+        }
+    }
+
+    public async ticktickSync(skipTask?: Task) {
+        const { checkpoint } = getSettings();
+        const syncCheckpoint = await this.ticktickapi.sync(checkpoint);
+        const tasksMap = this.getTasksMap();
+
+        const createOrUpdates = [...syncCheckpoint.taskSync.add, ...syncCheckpoint.taskSync.update];
+        for (const tickTickTask of createOrUpdates) {
+            if (tickTickTask.tickTickId === skipTask?.tickTickId) {
+                continue;
+            }
+
+            const oldTask = tasksMap.get(tickTickTask.tickTickId);
+            if (!oldTask) {
+                await this.createTask(tickTickTask);
+            } else {
+                await this.updateTask(oldTask, tickTickTask);
+            }
+
+            tasksMap.set(tickTickTask.tickTickId, tickTickTask);
+        }
+        // update cache
+        this.setTasks([...tasksMap.values()]);
+        // update checkpoint
+        updateSettings({ checkpoint: syncCheckpoint.checkpoint, ticktickprojects: syncCheckpoint.projects });
+        await this.saveSettings();
+    }
+
+    private async updateTask(originalTask: Task, update: Task) {
+        update.taskLocation = originalTask.taskLocation;
+        update.originalMarkdown = update.toFileLineString();
+        await replaceTaskWithTasks({ originalTask: originalTask, newTasks: update });
+    }
+
+    private async createTask(toCreate: Task) {
+        const file = this.app.workspace.getActiveFile();
+        if (!file) {
+            return;
+        }
+        const newTask = toCreate.toFileLineString();
+        toCreate.taskLocation = TaskLocation.fromUnknownPosition(new TasksFile(file.path));
+        toCreate.originalMarkdown = newTask;
+        await this.app.vault.append(file, newTask + '\n');
     }
 
     /**

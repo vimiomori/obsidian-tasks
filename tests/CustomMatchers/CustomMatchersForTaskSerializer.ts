@@ -113,6 +113,8 @@ function tryBuildTaskDetails(t: object): TaskDetails | null {
         onCompletion: '',
         dependsOn: [],
         id: '',
+        tickTickId: '',
+        tickTickProjectId: '',
         tags: [],
         ...t,
     };

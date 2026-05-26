@@ -1,5 +1,6 @@
 import type { LinkCache } from 'obsidian';
 import type { TasksFile } from '../Scripting/TasksFile';
+import { DEFAULT_SYMBOLS } from '../TaskSerializer/DefaultTaskSerializer';
 import type { Task } from './Task';
 import type { TaskLocation } from './TaskLocation';
 import { TaskRegularExpressions } from './TaskRegularExpressions';
@@ -7,7 +8,6 @@ import { Link } from './Link';
 
 export class ListItem {
     // The original line read from file.
-    public readonly originalMarkdown: string;
 
     public readonly parent: ListItem | null;
     public readonly children: ListItem[] = [];
@@ -16,7 +16,9 @@ export class ListItem {
     public readonly description: string;
     public readonly statusCharacter: string | null;
 
-    public readonly taskLocation: TaskLocation;
+    public taskLocation: TaskLocation;
+    public originalMarkdown: string;
+    public tickTickId: string;
 
     constructor({
         originalMarkdown,
@@ -26,6 +28,7 @@ export class ListItem {
         description,
         parent,
         taskLocation,
+        tickTickId,
     }: {
         originalMarkdown: string;
         indentation: string;
@@ -34,6 +37,7 @@ export class ListItem {
         description: string;
         parent: ListItem | null;
         taskLocation: TaskLocation;
+        tickTickId: string;
     }) {
         this.indentation = indentation;
         this.listMarker = listMarker;
@@ -47,6 +51,7 @@ export class ListItem {
         }
 
         this.taskLocation = taskLocation;
+        this.tickTickId = tickTickId;
     }
 
     /**
@@ -69,6 +74,11 @@ export class ListItem {
             // In practice we never reach here, because the regexp matches any text even '', but the compiler doesn't know that.
             return null;
         }
+        let tickTickId = '';
+        const tickTickIdmatch = originalMarkdown.match(DEFAULT_SYMBOLS.TaskFormatRegularExpressions.tickTickIdRegex);
+        if (tickTickIdmatch != null) {
+            tickTickId = tickTickIdmatch[1].trim();
+        }
 
         const listMarker = nonTaskMatch[2];
         if (listMarker === undefined) {
@@ -83,6 +93,7 @@ export class ListItem {
             description: nonTaskMatch[5].trim(),
             taskLocation,
             parent,
+            tickTickId,
         });
     }
 

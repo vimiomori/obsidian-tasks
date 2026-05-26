@@ -105,6 +105,74 @@ export class SettingsTab extends PluginSettingTab {
             });
 
         // ---------------------------------------------------------------------------
+        new Setting(containerEl).setName(i18n.t('settings.viSettings.heading')).setHeading();
+        new Setting(containerEl)
+            .setName(i18n.t('settings.viSettings.toggle.name'))
+            .setDesc(i18n.t('settings.viSettings.toggle.description'))
+            .addToggle((toggle) => {
+                const settings = getSettings();
+
+                toggle.setValue(settings.viSettings).onChange(async (value) => {
+                    updateSettings({ viSettings: value });
+                    await this.plugin.saveSettings();
+                });
+            });
+        new Setting(containerEl)
+            .setName(i18n.t('settings.viSettings.username.name'))
+            .setDesc(i18n.t('settings.viSettings.username.description'))
+            .addText((text) => {
+                const settings = getSettings();
+
+                text.setPlaceholder(i18n.t('settings.viSettings.username.placeholder'))
+                    .setValue(settings.username)
+                    .onChange(async (value) => {
+                        console.log(value);
+                        updateSettings({ username: value });
+                        this.plugin.ticktickapi.setUsername(value);
+                        await this.plugin.saveSettings();
+                    });
+            });
+
+        new Setting(containerEl)
+            .setName(i18n.t('settings.viSettings.password.name'))
+            .setDesc(i18n.t('settings.viSettings.password.description'))
+            .addText((text) => {
+                const settings = getSettings();
+                text.setPlaceholder(i18n.t('settings.viSettings.password.placeholder'))
+                    .setValue(settings.password)
+                    .onChange(async (value) => {
+                        console.log(value);
+                        updateSettings({ password: value });
+                        this.plugin.ticktickapi.setPassword(value);
+                        await this.plugin.saveSettings();
+                    });
+            });
+
+        const input = containerEl.querySelector('input[placeholder="password"]');
+        input?.setAttribute('type', 'password');
+
+        new Setting(containerEl).addButton((component) => {
+            component.setButtonText(i18n.t('settings.viSettings.login.name'));
+            component.onClick(() => {
+                this.plugin.ticktickapi.login();
+            });
+        });
+
+        new Setting(containerEl)
+            .setName(i18n.t('settings.viSettings.sync.name'))
+            .setDesc(i18n.t('settings.viSettings.sync.description'))
+            .addButton((component) => {
+                component.setButtonText(i18n.t('settings.viSettings.sync.name'));
+                component.onClick(async () => {
+                    console.log('calling sync');
+                    const projects = await this.plugin.ticktickapi.listProjects();
+                    updateSettings({ ticktickprojects: projects });
+                    await this.plugin.saveSettings();
+                });
+            });
+
+        // ---------------------------------------------------------------------------
+        // ---------------------------------------------------------------------------
         new Setting(containerEl).setName(i18n.t('settings.globalFilter.heading')).setHeading();
         // ---------------------------------------------------------------------------
         let globalFilterHidden: Setting | null = null;

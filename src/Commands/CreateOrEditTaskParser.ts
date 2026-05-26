@@ -96,6 +96,8 @@ export const taskFromLine = ({ line, path }: { line: string; path: string }): Ta
             onCompletion: OnCompletion.Ignore,
             dependsOn: [],
             id: '',
+            tickTickId: '',
+            tickTickProjectId: '',
             blockLink: '',
             tags: [],
             originalMarkdown: '',
@@ -140,6 +142,40 @@ export const taskFromLine = ({ line, path }: { line: string; path: string }): Ta
         // Not needed since the inferred status is always re-computed after submitting.
         scheduledDateIsInferred: false,
         id: '',
+        tickTickId: '',
+        tickTickProjectId: '',
         dependsOn: [],
+    });
+};
+
+export const taskFromFilePath = ({ path }: { path: string }): Task => {
+    const createdDate = getDefaultCreatedDate();
+
+    // If we are not on a line of a task, we take what we have.
+    return new Task({
+        // NEW_TASK_FIELD_EDIT_REQUIRED
+        status: Status.TODO,
+        description: '',
+        // We don't need the location fields except file to edit here in the editor.
+        taskLocation: TaskLocation.fromUnknownPosition(new TasksFile(path)),
+        indentation: '',
+        listMarker: '-',
+        priority: Priority.None,
+        createdDate,
+        startDate: null,
+        scheduledDate: null,
+        dueDate: null,
+        doneDate: null,
+        cancelledDate: null,
+        recurrence: null,
+        onCompletion: OnCompletion.Ignore,
+        dependsOn: [],
+        id: '',
+        tickTickId: '',
+        tickTickProjectId: '',
+        blockLink: '',
+        tags: [],
+        originalMarkdown: '',
+        scheduledDateIsInferred: false,
     });
 };

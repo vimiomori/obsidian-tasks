@@ -150,7 +150,7 @@
 <span bind:clientWidth={inputWidth}>
     <input
         bind:this={input}
-        bind:value={search}
+        value={search}
         on:keydown={(e) => taskKeydown(e)}
         on:focus={onFocused}
         on:blur={() => (inputFocused = false)}

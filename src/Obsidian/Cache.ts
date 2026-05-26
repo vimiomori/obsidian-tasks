@@ -28,6 +28,8 @@ export enum State {
     Warm = 'Warm',
 }
 
+export type TasksMap = Map<string, Task>;
+
 export class Cache {
     logger = logging.getLogger('tasks.Cache');
 
@@ -43,7 +45,8 @@ export class Cache {
 
     private readonly tasksMutex: Mutex;
     private state: State;
-    private tasks: Task[];
+    private _tasks: Task[];
+    private _tasksMap: TasksMap = new Map();
 
     private readonly notifySubscribersDebounced = debounce(
         () => this.notifySubscribersNotDebounced(),
@@ -88,7 +91,7 @@ export class Cache {
         this.state = State.Cold;
         this.logger.debug('Cache.constructor(): state = Cold');
 
-        this.tasks = [];
+        this._tasks = [];
 
         this.loadedAfterFirstResolve = false;
 
@@ -123,6 +126,30 @@ export class Cache {
 
     public getTasks(): Task[] {
         return this.tasks;
+    }
+
+    get tasks(): Task[] {
+        return this._tasks;
+    }
+
+    set tasks(value: Task[]) {
+        this._tasks = value;
+        this.tasksMap = value.reduce((acc, val) => {
+            acc.set(val.tickTickId, val);
+            return acc;
+        }, this._tasksMap);
+    }
+
+    public getTasksMap(): TasksMap {
+        return this.tasksMap;
+    }
+
+    get tasksMap(): TasksMap {
+        return this._tasksMap;
+    }
+
+    set tasksMap(value: TasksMap) {
+        this._tasksMap = value;
     }
 
     public getState(): State {
@@ -178,6 +205,18 @@ export class Cache {
             });
         });
         this.vaultEventReferences.push(createdEventReference);
+
+        const modifiedEventReference = this.vault.on('modify', (file: TAbstractFile) => {
+            if (!(file instanceof TFile)) {
+                return;
+            }
+            this.logger.debug(`Cache.subscribeToVault.modifiedEventReference() ${file.path}`);
+
+            this.tasksMutex.runExclusive(() => {
+                this.indexFile(file);
+            });
+        });
+        this.vaultEventReferences.push(modifiedEventReference);
 
         const deletedEventReference = this.vault.on('delete', (file: TAbstractFile) => {
             if (!(file instanceof TFile)) {

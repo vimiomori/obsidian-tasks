@@ -35,6 +35,7 @@ export class EditableTask {
     forwardOnly: boolean;
     blockedBy: Task[];
     blocking: Task[];
+    tickTickProjectid: string;
 
     private constructor(editableTask: {
         addGlobalFilterOnSave: boolean;
@@ -55,6 +56,7 @@ export class EditableTask {
         forwardOnly: boolean;
         blockedBy: Task[];
         blocking: Task[];
+        tickTickProjectid: string;
     }) {
         this.addGlobalFilterOnSave = editableTask.addGlobalFilterOnSave;
         this.originalBlocking = editableTask.originalBlocking;
@@ -73,6 +75,7 @@ export class EditableTask {
         this.forwardOnly = editableTask.forwardOnly;
         this.blockedBy = editableTask.blockedBy;
         this.blocking = editableTask.blocking;
+        this.tickTickProjectid = editableTask.tickTickProjectid;
     }
 
     /**
@@ -133,6 +136,7 @@ export class EditableTask {
             forwardOnly: true,
             blockedBy: blockedBy,
             blocking: originalBlocking,
+            tickTickProjectid: task.tickTickProjectId,
         });
     }
 
@@ -144,7 +148,9 @@ export class EditableTask {
      * @param task
      * @param allTasks
      */
-    public async applyEdits(task: Task, allTasks: Task[]): Promise<Task[]> {
+    // TODO: name
+    //
+    public async applyEdits(task: Task, allTasks: Task[]): Promise<{ updatedTask: Task; updatedTasks: Task[] }> {
         // NEW_TASK_FIELD_EDIT_REQUIRED
         let description = this.description.trim();
         if (this.addGlobalFilterOnSave) {
@@ -207,6 +213,7 @@ export class EditableTask {
             cancelledDate,
             dependsOn: blockedByWithIds.map((task) => task.id),
             id,
+            tickTickProjectId: this.tickTickProjectid,
         });
 
         for (const blocking of removedBlocking) {
@@ -222,7 +229,13 @@ export class EditableTask {
         // Then apply the new status to the updated task, in case a new recurrence
         // needs to be created.
         const today = this.inferTodaysDate(this.status.type, doneDate, cancelledDate);
-        return updatedTask.handleNewStatusWithRecurrenceInUsersOrder(this.status, today);
+        const updatedTasks = updatedTask.handleNewStatusWithRecurrenceInUsersOrder(this.status, today);
+        const ret = {
+            updatedTask,
+            updatedTasks,
+        };
+
+        return ret;
     }
 
     /**

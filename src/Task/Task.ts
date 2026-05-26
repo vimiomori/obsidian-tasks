@@ -57,6 +57,8 @@ export class Task extends ListItem {
 
     public readonly dependsOn: string[];
     public readonly id: string;
+    public tickTickId: string;
+    public tickTickProjectId: string;
 
     /** The blockLink is a "^" annotation after the dates/recurrence rules.
      * Any non-empty value must begin with ' ^'. */
@@ -94,6 +96,8 @@ export class Task extends ListItem {
         onCompletion: OnCompletion;
         dependsOn: string[] | [];
         id: string;
+        tickTickId: string;
+        tickTickProjectId: string;
         blockLink: string;
         tags: string[] | [];
         originalMarkdown: string;
@@ -118,6 +122,8 @@ export class Task extends ListItem {
             onCompletion,
             dependsOn,
             id,
+            tickTickId,
+            tickTickProjectId,
             blockLink,
             tags,
             originalMarkdown,
@@ -132,6 +138,7 @@ export class Task extends ListItem {
             description,
             taskLocation,
             parent: parent ?? null,
+            tickTickId,
         });
         // NEW_TASK_FIELD_EDIT_REQUIRED
         this.status = status;
@@ -152,6 +159,8 @@ export class Task extends ListItem {
 
         this.dependsOn = dependsOn;
         this.id = id;
+        this.tickTickId = tickTickId;
+        this.tickTickProjectId = tickTickProjectId;
 
         this.blockLink = blockLink;
 
@@ -406,12 +415,16 @@ export class Task extends ListItem {
         const oldStatusWasDone = this.status.isCompleted();
         const noRecurrenceRule = this.recurrence === null;
 
+        const api = TickTickApi.getInstance();
+        api.update(toggledTask);
+
         const noNewRecurrence = newStatusIsNotDone || oldStatusWasDone || noRecurrenceRule;
         if (noNewRecurrence) {
             return [toggledTask];
         }
 
-        const nextOccurrence = this.recurrence.next(today);
+        const { removeScheduledDateOnRecurrence } = getSettings();
+        const nextOccurrence = this.recurrence?.next(today, removeScheduledDateOnRecurrence);
         if (nextOccurrence === null) {
             return [toggledTask];
         }
@@ -449,7 +462,7 @@ export class Task extends ListItem {
         return newDate;
     }
 
-    private createNextOccurrence(newStatus: Status, nextOccurrence: Occurrence) {
+    private createNextOccurrence(newStatus: Status, nextOccurrence?: Occurrence | null) {
         const { setCreatedDate } = getSettings();
         let createdDate: moment.Moment | null = null;
         if (setCreatedDate) {

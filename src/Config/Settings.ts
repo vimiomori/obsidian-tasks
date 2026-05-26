@@ -27,6 +27,11 @@ export type HeadingState = {
     [id: string]: boolean;
 };
 
+export type TickTickProject = {
+    id: string;
+    name: string;
+};
+
 /**
  * Interface encapsulating how a Task is written to and read from text
  *
@@ -66,6 +71,9 @@ export interface Settings {
     presets: PresetsMap;
     globalQuery: string;
     globalFilter: string;
+    viSettings: boolean;
+    username: string;
+    password: string;
     removeGlobalFilter: boolean;
     taskFormat: keyof TASK_FORMATS;
     setCreatedDate: boolean;
@@ -83,6 +91,10 @@ export interface Settings {
     searchResults: {
         taskCountLocation: 'top' | 'bottom';
     };
+
+    // TickTickSync
+    ticktickprojects: TickTickProject[];
+    checkpoint: number;
 
     // The custom status states.
     statusSettings: StatusSettings;
@@ -108,6 +120,9 @@ const defaultSettings: Readonly<Settings> = {
     presets: defaultPresets,
     globalQuery: '',
     globalFilter: '',
+    viSettings: true,
+    username: '',
+    password: '',
     removeGlobalFilter: false,
     taskFormat: 'tasksPluginEmoji',
     setCreatedDate: false,
@@ -137,6 +152,8 @@ const defaultSettings: Readonly<Settings> = {
         // removeGlobalFilter: false,
         // setDoneDate: true,
     },
+    ticktickprojects: [],
+    checkpoint: 0,
     headingOpened: {},
     debugSettings: new DebugSettings(),
 

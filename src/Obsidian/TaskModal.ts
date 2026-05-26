@@ -3,37 +3,28 @@ import { Modal } from 'obsidian';
 
 import EditTask from '../ui/EditTask.svelte';
 import type { Task } from '../Task/Task';
-import { StatusRegistry } from '../Statuses/StatusRegistry';
-import { Status } from '../Statuses/Status';
-import { OptionsModal } from './OptionsModal';
-
-export interface TaskModalParams {
-    app: App;
-    task: Task;
-    onSaveSettings: () => Promise<void>;
-    onSubmit: (updatedTasks: Task[]) => void;
-    onCancel?: () => void;
-    allTasks: Task[];
-}
-
 export class TaskModal extends Modal {
     public readonly task: Task;
-    public readonly onSaveSettings: () => Promise<void>;
-    public readonly onSubmit: (updatedTasks: Task[]) => void;
+    public readonly onSubmit: (updatedTasks: Task[], updatedTask?: Task) => void | Promise<void>;
     public readonly allTasks: Task[];
 
-    constructor({ app, task, onSaveSettings, onSubmit, onCancel, allTasks }: TaskModalParams) {
+    constructor({
+        app,
+        task,
+        onSubmit,
+        allTasks,
+    }: {
+        app: App;
+        task: Task;
+        onSubmit: (updatedTasks: Task[], updatedTask?: Task) => void | Promise<void>;
+        allTasks: Task[];
+    }) {
         super(app);
 
         this.task = task;
         this.allTasks = allTasks;
-        this.onSaveSettings = onSaveSettings;
-        this.onSubmit = (updatedTasks: Task[]) => {
-            if (updatedTasks.length > 0) {
-                onSubmit(updatedTasks);
-            } else if (onCancel) {
-                onCancel();
-            }
+        this.onSubmit = (updatedTasks: Task[], updatedTask?: Task) => {
+            updatedTasks.length && onSubmit(updatedTasks, updatedTask);
             this.close();
         };
     }
@@ -62,13 +53,13 @@ export class TaskModal extends Modal {
         const { contentEl } = this;
         this.contentEl.style.paddingBottom = '0';
 
-        const statusOptions = this.getKnownStatusesAndCurrentTaskStatusIfNotKnown();
+        // const statusOptions = this.getKnownStatusesAndCurrentTaskStatusIfNotKnown();
 
         new EditTask({
             target: contentEl,
             props: {
                 task: this.task,
-                statusOptions: statusOptions,
+                // statusOptions: statusOptions,
                 onSubmit: this.onSubmit,
                 allTasks: this.allTasks,
             },
@@ -81,13 +72,13 @@ export class TaskModal extends Modal {
      * This allows the user to switch to a different status and then change their
      * mind and return to the initial status.
      */
-    private getKnownStatusesAndCurrentTaskStatusIfNotKnown() {
-        const statusOptions: Status[] = StatusRegistry.getInstance().registeredStatuses;
-        if (StatusRegistry.getInstance().bySymbol(this.task.status.symbol) === Status.EMPTY) {
-            statusOptions.push(this.task.status);
-        }
-        return statusOptions;
-    }
+    // private getKnownStatusesAndCurrentTaskStatusIfNotKnown() {
+    //     const statusOptions: Status[] = StatusRegistry.getInstance().registeredStatuses;
+    //     if (StatusRegistry.getInstance().bySymbol(this.task.status.symbol) === Status.EMPTY) {
+    //         statusOptions.push(this.task.status);
+    //     }
+    //     return statusOptions;
+    // }
 
     public onClose(): void {
         const { contentEl } = this;
